@@ -7,11 +7,6 @@ Original file is located at
     https://colab.research.google.com/drive/11LW6f3MXhN4JENK0fBOfuIVXq_YQRq0Q
 """
 
-# # Use a pipeline as a high-level helper
-# from transformers import pipeline
-
-# pipe = pipeline("translation", model="facebook/nllb-200-418M")
-
 # Load model directly
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, M2M100ForConditionalGeneration
 
@@ -19,28 +14,11 @@ from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, M2M100ForConditio
 model = M2M100ForConditionalGeneration.from_pretrained("facebook/m2m100_418M")
 tokenizer = AutoTokenizer.from_pretrained("facebook/m2m100_418M")
 
-print(tokenizer)
-
-tokenizer.src_lang = "en"
-hi_text = "Every human deserves rights"
-encoded_hi = tokenizer(hi_text, return_tensors="pt")
-generated_tokens = model.generate(**encoded_hi, forced_bos_token_id=tokenizer.get_lang_id("uk"))
-tokenizer.batch_decode(generated_tokens, skip_special_tokens=True)
-
-# pip install openai
-
-# from google.colab import drive
-# drive.mount('/content/drive')
-
-#pip install paraphraser
-
 import nltk
 nltk.download('averaged_perceptron_tagger')
 nltk.download('punkt')
 nltk.download('wordnet')
 from nltk.tokenize import sent_tokenize
-
-# pip install git+https://github.com/PrithivirajDamodaran/Parrot_Paraphraser.git
 
 pip install rouge
 
@@ -53,10 +31,6 @@ import time
 from rouge import Rouge
 from transformers import pipeline, AutoTokenizer, AutoModelForSeq2SeqLM
 from google.colab import files
-
-# translator = pipeline("translation", model="facebook/nllb-200-3.3B")
-# tokenizer = AutoTokenizer.from_pretrained("facebook/nllb-200-3.3B")
-# model = AutoModelForSeq2SeqLM.from_pretrained("facebook/nllb-200-3.3B")
 
 def translate_text(text, target_language):
     try:
@@ -215,7 +189,6 @@ def translate_csv(input_csv, output_csv, target_languages, num):
                       'Expected_High_Uncertainty_Avoidance', 'Expected_Low_Uncertainty_Avoidance'])
 
     translated_df.to_csv(output_csv, index=False)
-    # files.download(output_csv)
 
 # Individualistic vs Collectivist
 multilingual_individualistic_vs_collectivist_df = pd.read_csv("../data/individualistic_vs_collectivist.csv")
@@ -243,7 +216,7 @@ datasets = [
   multilingual_mas_df,
   multilingual_power_distance_df,
   multilingual_uncertainty_avoidance_df
-    ]
+]
 
 outputs = [
   output_multilingual_individualistic_vs_collectivist_csv ,
@@ -297,10 +270,3 @@ num = 0
 for dataset in datasets:
   translate_csv(dataset, outputs[num], target_languages, num)
   num += 1
-
-# !pip install --upgrade googletrans==4.0.0-rc1
-# from googletrans import Translator
-# translator = Translator()
-# text = 'My name is Julia'
-# translation = translator.translate(text, dest='ru')
-# translation.text
