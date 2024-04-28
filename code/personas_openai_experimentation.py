@@ -7,9 +7,9 @@ Original file is located at
     https://colab.research.google.com/drive/1qSQ9sxdWsVcT0skO_VGFmIUNK_KPsbOW
 """
 
-pip install sentence_transformers
+#pip install sentence_transformers
 
-pip install openai
+#pip install openai
 
 from sentence_transformers import SentenceTransformer
 model = SentenceTransformer("all-MiniLM-L6-v2")
@@ -36,7 +36,7 @@ import os
 import openai
 from openai import OpenAI
 import pandas as pd
-from google.colab import files
+#from google.colab import files
 
 
 def get_answer(prompt, answer, choice_a, choice_b):
@@ -313,6 +313,6 @@ for dataset in datasets:
   recorded_answers = record_answers(dataset, num)
   recorded_dataset = pd.DataFrame(recorded_answers)
   recorded_dataset.to_csv(outputs[num], index=False)
-  files.download(outputs[num])
+  #files.download(outputs[num])
   print(recorded_dataset)
   num += 1
