@@ -39,7 +39,7 @@ import pandas as pd
 from google.colab import files
 
 
-def get_answer(prompt, choice_a, choice_b):
+def get_answer(prompt, answer, choice_a, choice_b):
   client = OpenAI(api_key='')
   chat_completion = client.chat.completions.create(
       messages = [
@@ -55,14 +55,17 @@ def get_answer(prompt, choice_a, choice_b):
                          the model suggests. Keep in mind that answers may be opposite of each other e.g. 'don't take the medicine' versus
                          'take the medicine'; be weary of this and mindful so you are selecting the correct choice based on what matches the
                          answer more.
-                        """ % (prompt, choice_a, choice_b)
+                        """ % (answer, choice_a, choice_b)
           },
           {
               "role": "user",
               "content": """
-              Given the answer: %s, and two choices: %s and %s, provide the choice
+              Situation: %s
+              Answer: %s
+              Choices: %s, %s, and 'Inconclusive'
+              Provide the choice
                         that aligns best with the recommendation in the answer, focusing on the suggested action.
-                        If neither choice aligns well, return 'Inconclusive'.""" % (prompt, choice_a, choice_b)
+                        If neither choice aligns well, return 'Inconclusive'.""" % (prompt, answer, choice_a, choice_b)
           }
       ],
       temperature=0,
@@ -72,7 +75,7 @@ def get_answer(prompt, choice_a, choice_b):
   return chat_completion.choices[0].message.content
 
 def ask_chat_gpt(prompt):
-    # Call OpenAI's GPT-3 model to generate a response
+    # Call OpenAI's GPT-4 model to generate a response
     client = OpenAI(api_key='')
     chat_completion = client.chat.completions.create(
         messages=[
@@ -114,7 +117,7 @@ def record_answers(dataset, num):
             response = ask_chat_gpt(prompt)
             print(response)
 
-            best_answer = get_answer(response, choice_a, choice_b)
+            best_answer = get_answer(prompt, response, choice_a, choice_b)
             print(best_answer)
 
 
@@ -255,7 +258,7 @@ def record_answers(dataset, num):
               data['Expected_Masculine'] = row['Expected_Masculine']
               data['Expected_Feminine'] = row['Expected_Feminine']
 
-            elif num == 3: # pdf
+            elif num == 3: # pdi
               data['Expected_High_Power_Distance'] = row['Expected_High_Power_Distance']
               data['Expected_Low_Power_Distance'] = row['Expected_Low_Power_Distance']
 
