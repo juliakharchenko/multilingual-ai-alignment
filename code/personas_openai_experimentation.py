@@ -66,7 +66,7 @@ def get_answer(prompt, choice_a, choice_b):
           }
       ],
       temperature=0,
-      model="gpt-3.5-turbo-0125",
+      model="gpt-4",
   )
   print(chat_completion.choices)
   return chat_completion.choices[0].message.content
@@ -81,7 +81,7 @@ def ask_chat_gpt(prompt):
                 "content": prompt,
             }
         ],
-        model="gpt-3.5-turbo-0125",
+        model="gpt-4",
     )
     return chat_completion.choices[0].message.content
 
