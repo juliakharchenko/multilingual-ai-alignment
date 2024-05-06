@@ -96,7 +96,7 @@ def record_answers(dataset, num):
     # need to create a nested collection so we can do this then
 
     for index, row in dataset.iterrows():
-        prompt = row['English_Prompt_Persona_Nationality'] + "Answer in one sentence."
+        prompt = row['Forward_Translation']
         if num == 0:
           choice_a = row['Expected_Individualistic']
           choice_b = row['Expected_Collectivist']
@@ -221,10 +221,11 @@ def record_answers(dataset, num):
 
             data = {
                 'English_Prompt': row['English_Prompt'],
-                'English_Prompt_Persona_Nationality': row['English_Prompt_Persona_Nationality'],
-                'Target_Nationality': row['Target_Nationality'],
+                'Translated_Prompt': row['Forward_Translation'],
+                'Target_Language': row['Target_Language'],
+                'Target_Nationality': row['Target_Nationality'], # but def for sure add this later on
                 'AI_Generated': row['AI_Generated'],
-                'Language': row['Language'],
+                #'Language': row['Language'],
                 'Resource_Level': row['Resource_Level'],
                 'Individualistic': row['Individualistic'],
                 'Individualistic_Collectivist_Score': row['Individualistic_Collectivist_Score'],
@@ -238,6 +239,7 @@ def record_answers(dataset, num):
                 'Long_Term_Orientation_Score': row['Long_Term_Orientation_Score'],
                 'Target_Language_Code': row['Target_Language_Code'],
                 'LLM_Response': response,
+                # do we need a backtranslated response too? so i can analyze it... probably then
                 'Round_Number': i,
                 'Best_Answer': best_answer,
                 'Matching_Choice': matching_choice,
@@ -272,43 +274,43 @@ def record_answers(dataset, num):
     return recorded_data
 
 # Individualistic vs Collectivist
-personas_individualistic_vs_collectivist_df = pd.read_csv("../data/output_personas_individualistic_vs_collectivist.csv")
-output_personas_individualistic_vs_collectivist_csv = "output_openai_personas_individualistic_collectivist.csv"
+personas_individualistic_vs_collectivist_df = pd.read_csv("../data/output_multilingual_individualistic_vs_collectivist.csv")
+output_personas_individualistic_vs_collectivist_csv = "output_openai_multilingual_individualistic_collectivist.csv"
 
 # Long term vs short term orientation
-personas_orientation_df = pd.read_csv("../data/output_personas_long_term_orientation.csv")
-output_personas_orientation_csv = "output_openai_personas_orientation.csv"
+personas_orientation_df = pd.read_csv("../data/output_multilingual_long_term_orientation.csv")
+output_personas_orientation_csv = "output_openai_multilingual_orientation.csv"
 
 # Masculinity vs femininity
-personas_mas_df = pd.read_csv("../data/output_personas_masculinity_femininity.csv")
-output_personas_mas_csv = "output_openai_personas_mas_new.csv"
+personas_mas_df = pd.read_csv("../data/output_multilingual_masculinity_femininity.csv")
+output_personas_mas_csv = "output_openai_multilingual_mas_new.csv"
 
 # Power distance index
-personas_power_distance_df = pd.read_csv("../data/output_personas_power_distance_index.csv")
-output_personas_power_distance_csv = "output_openai_personas_power_distance.csv"
+personas_power_distance_df = pd.read_csv("../data/output_multilingual_power_distance_index.csv")
+output_personas_power_distance_csv = "output_openai_multilingual_power_distance.csv"
 
 # Uncertainty avoidance
-personas_uncertainty_avoidance_df = pd.read_csv("../data/output_personas_uncertainty.csv")
-output_personas_uncertainity_avoidance_csv = "output_openai_personas_uncertainty.csv"
+personas_uncertainty_avoidance_df = pd.read_csv("../data/output_multilingual_uncertainty.csv")
+output_personas_uncertainity_avoidance_csv = "output_openai_multilingual_uncertainty.csv"
 
 datasets = [
-    # personas_individualistic_vs_collectivist_df,
-  #personas_orientation_df,
+  personas_individualistic_vs_collectivist_df,
+  personas_orientation_df,
   personas_mas_df,
-  # personas_power_distance_df,
+  personas_power_distance_df,
   personas_uncertainty_avoidance_df
 ]
 
 outputs = [
-  # output_personas_individualistic_vs_collectivist_csv,
-  #output_personas_orientation_csv,
+  output_personas_individualistic_vs_collectivist_csv,
+  output_personas_orientation_csv,
   output_personas_mas_csv,
-  # output_personas_power_distance_csv,
+  output_personas_power_distance_csv,
   output_personas_uncertainity_avoidance_csv
 ]
 
 # Going through each file
-num = 2
+num = 0
 ind = 0
 for dataset in datasets:
   recorded_answers = record_answers(dataset, num)
@@ -317,5 +319,5 @@ for dataset in datasets:
   #files.download(outputs[num])
   print(recorded_dataset)
   ind += 1
-  num += 2
+  num += 1
 
