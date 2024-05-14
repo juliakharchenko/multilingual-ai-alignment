@@ -89,7 +89,7 @@ def ask_chat_gpt(prompt):
     return chat_completion.choices[0].message.content
 
 
-# sentiment matching??? ask agent which response it matches more
+# sentiment matching - ask agent which response it matches more
 def record_answers(dataset, num):
     recorded_data = []
     # iterate through all the datasets as well
