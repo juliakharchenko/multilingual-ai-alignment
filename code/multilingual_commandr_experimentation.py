@@ -8,7 +8,7 @@ from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 
 bnb_config = BitsAndBytesConfig(load_in_8bit=True)
 
-model_id = "CohereForAI/c4ai-command-r-v01-4bit"
+model_id = "CohereForAI/c4ai-command-r-plus-4bit"
 tokenizer = AutoTokenizer.from_pretrained(model_id)
 model = AutoModelForCausalLM.from_pretrained(model_id, device_map='auto')
 
