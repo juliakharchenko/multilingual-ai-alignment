@@ -1,42 +1,23 @@
-from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, M2M100ForConditionalGeneration
-
-model = AutoModelForSeq2SeqLM.from_pretrained("facebook/nllb-200-3.3B", token=True).to("cuda")
-
-
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 import nltk
+import pandas as pd
+from nltk.translate.bleu_score import SmoothingFunction, sentence_bleu
+from nltk.tokenize import word_tokenize, sent_tokenize
+
 nltk.download('averaged_perceptron_tagger')
 nltk.download('punkt')
 nltk.download('wordnet')
-from nltk.tokenize import sent_tokenize
 
-import pandas as pd
-from nltk.translate.bleu_score import SmoothingFunction
-from nltk.tokenize import word_tokenize
-from nltk.translate.bleu_score import sentence_bleu
-from nltk.corpus import wordnet
-from nltk.tag import pos_tag
-import time
-from rouge import Rouge
-from transformers import pipeline, AutoTokenizer, AutoModelForSeq2SeqLM
-
+model = AutoModelForSeq2SeqLM.from_pretrained("facebook/nllb-200-3.3B", token=True).to("cuda")
 
 def translate_text(text, src_language, target_language):
     try:
-        # Tokenize the input text into sentences
         sentences = sent_tokenize(text)
-
-        # Initialize an empty list to store translated sentences
         translated_sentences = []
         tokenizer = AutoTokenizer.from_pretrained("facebook/nllb-200-3.3B", token=True, src_lang=src_language)
 
-        # Iterate over each sentence, translate, and append to the list
         for sentence in sentences:
-            # Attempt to translate each sentence
             try:
-                # tokenizer.src_lang = src_language
-                # encoded_text = tokenizer(sentence, return_tensors="pt")
-                # generated_tokens = model.generate(**inputs, forced_bos_token_id=tokenizer.lang_code_to_id[target_language])
-                # translated_sentence = tokenizer.batch_decode(generated_tokens, skip_special_tokens=True)[0]
                 inputs = tokenizer(sentence, return_tensors="pt").to("cuda")
                 generated_tokens = model.generate(**inputs, forced_bos_token_id=tokenizer.lang_code_to_id[target_language])
                 translated_sentence = tokenizer.batch_decode(generated_tokens, skip_special_tokens=True)[0]
@@ -44,70 +25,20 @@ def translate_text(text, src_language, target_language):
             except Exception as sentence_error:
                 print(f"Translation of sentence '{sentence}' failed: {sentence_error}")
 
-        # Combine the translated sentences into a single translated text
         translated_text = ' '.join(translated_sentences)
-
         return translated_text
     except Exception as e:
         print(f"Translation failed: {e}")
         return None
 
-def calculate_rouge_score(reference, candidate):
-    rouge = Rouge()
-    scores = rouge.get_scores(candidate, reference)
-    return scores[0]['rouge-l']['f']
-
 def calculate_bleu(reference, candidate):
     reference_tokens = word_tokenize(reference)
-    #print(reference_tokens)
     candidate_tokens = word_tokenize(candidate)
-    #print(candidate_tokens)
     smoother = SmoothingFunction()
     return sentence_bleu([reference_tokens], candidate_tokens, smoothing_function=smoother.method1)
 
-def generate_paraphrases(sentence, num_paraphrases=1):
-    paraphrases = set()
-    tokens = word_tokenize(sentence)
-    tagged_tokens = pos_tag(tokens)
-
-    pos_groups = {}
-    for token, tag in tagged_tokens:
-        if tag in pos_groups:
-            pos_groups[tag].append(token)
-        else:
-            pos_groups[tag] = [token]
-
-    for tag, tokens_group in pos_groups.items():
-        if tag.startswith('NN') or tag.startswith('VB') or tag.startswith('JJ'):
-            synonyms_group = set()
-            for token in tokens_group:
-                for syn in wordnet.synsets(token):
-                    for lemma in syn.lemmas():
-                        synonym = lemma.name().replace("_", " ")
-                        if lemma.name() != token and wordnet.synsets(synonym):
-                            similarity_threshold = 0.7
-                            if syn.path_similarity(wordnet.synsets(token)[0]) is not None and syn.path_similarity(wordnet.synsets(synonym)[0]) is not None:
-                                if syn.path_similarity(wordnet.synsets(token)[0]) > similarity_threshold and syn.path_similarity(wordnet.synsets(synonym)[0]) > similarity_threshold:
-                                    synonyms_group.add(synonym)
-
-            if synonyms_group:
-                for _ in range(min(num_paraphrases, len(synonyms_group))):
-                    paraphrase_tokens = tokens[:]
-                    for original_token, synonym in zip(tokens_group, synonyms_group):
-                        for i, token in enumerate(p for p in paraphrase_tokens if p == original_token):
-                            paraphrase_tokens[paraphrase_tokens.index(token)] = synonym
-                    paraphrase = ' '.join(paraphrase_tokens)
-                    if paraphrase != sentence:
-                        paraphrases.add(paraphrase)
-                    if len(paraphrases) >= num_paraphrases:
-                        break
-        if len(paraphrases) >= num_paraphrases:
-            break
-    return list(paraphrases)[:num_paraphrases]
-
 def translate_csv(input_csv, output_csv, target_languages, num):
     df = input_csv
-
     rows = []
 
     for index, row in df.iterrows():
@@ -123,7 +54,6 @@ def translate_csv(input_csv, output_csv, target_languages, num):
             print('Back Translation into English: %s' % (back_translation))
             print('%s BLEU Score = %s' % (target_language, back_bleu_score))
                   
-    
             if num == 0:
                 rows.append([row['English_Prompt'], forward_translation, forward_bleu_score,
                              back_translation, back_bleu_score,
