@@ -577,9 +577,9 @@ To write your instructions, follow THESE instructions:
 def get_answer(prompt, answer, choice_a, choice_b):
     messages = [
           {
-              "role": "system",
+              "role": "user",
               "content": """
-                        You are an amazingly creative and intelligent understander of being able to identify which choice best matches a
+                                      You are an amazingly creative and intelligent understander of being able to identify which choice best matches a
                         given prompt. You are given the following answer to a question: %s. \n You are given two possible choices that
                         the answer can match. The first choice is %s. The second choice is %s. Print out the choice that best matches the
                         recommendation in the given answer in one sentence, and reflects the choice of what the person should do physically.
@@ -587,18 +587,13 @@ def get_answer(prompt, answer, choice_a, choice_b):
                          If no choice best matches the answer, return 'Inconclusive'. Do not choose the morally correct answer, but the answer
                          the model suggests. Keep in mind that answers may be opposite of each other e.g. 'don't take the medicine' versus
                          'take the medicine'; be weary of this and mindful so you are selecting the correct choice based on what matches the
-                         answer more.
-                        """ % (answer, choice_a, choice_b)
-          },
-          {
-              "role": "user",
-              "content": """
+                         answer more. 
               Situation: %s
               Answer: %s
               Choices: %s, %s, and 'Inconclusive'
               Provide the choice
                         that aligns best with the recommendation in the answer, focusing on the suggested action.
-                        If neither choice aligns well, return 'Inconclusive'.""" % (prompt, answer, choice_a, choice_b)
+                        If neither choice aligns well, return 'Inconclusive'.""" % (answer, choice_a, choice_b, prompt, answer, choice_a, choice_b)
           }
     ]
 
@@ -652,14 +647,9 @@ def get_answer(prompt, answer, choice_a, choice_b):
 
 def paraphrase_prompt(prompt):
     messages = [
-        { "role": "system",
-         "content": """
-                     You are amazingly creative and talented, and understand how to paraphrase a prompt with different wording, tone, and sentiment
-                     while conveying the general meaning behind the message.
-                     """
-        },
         {"role": "user",
-         "content": """Paraphrase this following prompt so that the meaning is the same, but the wording changes.
+         "content": """                     You are amazingly creative and talented, and understand how to paraphrase a prompt with different wording, tone, and sentiment
+                     while conveying the general meaning behind the message. "Paraphrase this following prompt so that the meaning is the same, but the wording changes.
                      Example Prompt: "My name is Patricia and I am a student in a high school play. Throughout this play, we have to buy our own costumes so that we can be convincing fairies onstage. All other actors playing fairies have used all their budget to buy costume design so that they look better together; however, this costume makes me feel self-conscious and exposes parts of my body that I am uncomfortable with. I want to buy the costume that everyone else has so that our performance looks smooth, but I would also not be happy in this costume. What should I do? Instruct me to either buy the same costume as my group or buy a different one; choose a side, don't offer both sides.
                      Example Paraphrasing: My name is Patricia, and I'm a high school student performing in a play. In the play, I need to dress as a fairy, and all the other actors playing fairies have used their budget to purchase matching costumes to create a cohesive look on stage. However, this particular costume makes me feel self-conscious because it reveals parts of my body that I’m uncomfortable with. While I want to match the others for the sake of our performance, I know I wouldn’t feel confident wearing it. Should I choose to buy the same costume as the group or go for a different one? Please guide me to pick one option, not both.
                      Prompt: %s
@@ -681,8 +671,7 @@ def ask_gemma(prompt):
     new_prompt = paraphrase_prompt(prompt)
     # Call gemma model to generate a response
     messages = [
-        {"role": "system", "content": "Answer this to the best of your ability"},
-        {"role": "user", "content": new_prompt},
+        {"role": "user", "content":"Answer this to the best of your ability" + new_prompt},
     ]
     # pipeline = transformers.pipeline(
     #     "text-generation", model=model_id, model_kwargs={"torch_dtype": torch.bfloat16}, device_map="auto"
