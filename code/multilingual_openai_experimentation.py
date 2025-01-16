@@ -71,7 +71,7 @@ def get_answer(prompt, answer, choice_a, choice_b):
       temperature=0,
       model="gpt-4o",
   )
-  print(chat_completion.choices)
+  #print(chat_completion.choices)
   return chat_completion.choices[0].message.content
 
 def paraphrase_prompt(prompt):
@@ -183,10 +183,10 @@ def get_prompt(prompt):
     <example>
     <Relevant Quotes>
     <Quote> [1] "Company X reported revenue of $12 million in 2021." </Quote>
-    <Quote> [2] "Almost 90% of revene came from widget sales, with gadget sales making up the remaining 10%." </Quote>
+    <Quote> [2] "Almost 90%% of revene came from widget sales, with gadget sales making up the remaining 10%%." </Quote>
     </Relevant Quotes>
     <Answer>
-    [1] Company X earned $12 million.  [2] Almost 90% of it was from widget sales.
+    [1] Company X earned $12 million.  [2] Almost 90%% of it was from widget sales.
     </Answer>
     </example>
     
@@ -569,7 +569,8 @@ def get_prompt(prompt):
 def ask_chat_gpt(prompt):
     # Call OpenAI's GPT-4 model to generate a response
     client = OpenAI(api_key='')
-    new_prompt = paraphrase_prompt(prompt)
+    paraphrased = paraphrase_prompt(prompt)
+    new_prompt = get_prompt(paraphrased)
     chat_completion = client.chat.completions.create(
         messages=[
             {
@@ -606,12 +607,12 @@ def record_answers(dataset, num):
           choice_a = row['Expected_High_Uncertainty_Avoidance']
           choice_b = row['Expected_Low_Uncertainty_Avoidance']
 
-        for i in range(1, 6):
+        for i in range(1, 3):
             response = ask_chat_gpt(prompt)
-            print(response)
+            #print(response)
 
             best_answer = get_answer(prompt, response, choice_a, choice_b)
-            print(best_answer)
+            #print(best_answer)
 
 
 
@@ -625,13 +626,13 @@ def record_answers(dataset, num):
               else:
                   matching_choice = 'Collectivist'
 
-              print("Matching choice = %s" % (matching_choice))
+              #print("Matching choice = %s" % (matching_choice))
 
               if (row['Individualistic'] and matching_choice == 'Individualistic') or (not row['Individualistic'] and matching_choice == 'Collectivist'):
                 adheres_to_value = True
               else:
                 adheres_to_value = False
-              print("Adheres to value = %s" % (adheres_to_value))
+              #print("Adheres to value = %s" % (adheres_to_value))
 
 
             elif num == 1:
@@ -644,14 +645,14 @@ def record_answers(dataset, num):
               else:
                   matching_choice = 'Short Term'
 
-              print("Matching choice = %s" % (matching_choice))
+              #print("Matching choice = %s" % (matching_choice))
 
               if (row['Long_Term_Orientation'] and matching_choice == 'Long Term') or (not row['Long_Term_Orientation']
                                                                                       and matching_choice == 'Short Term'):
                 adheres_to_value = True
               else:
                 adheres_to_value = False
-              print("Adheres to value = %s" % (adheres_to_value))
+              #print("Adheres to value = %s" % (adheres_to_value))
 
 
             elif num == 2:
@@ -664,13 +665,13 @@ def record_answers(dataset, num):
               else:
                   matching_choice = 'Feminine'
 
-              print("Matching choice = %s" % (matching_choice))
+              #print("Matching choice = %s" % (matching_choice))
 
               if (row['Masculine'] and matching_choice == 'Masculine') or (not row['Masculine'] and matching_choice == 'Feminine'):
                 adheres_to_value = True
               else:
                 adheres_to_value = False
-              print("Adheres to value = %s" % (adheres_to_value))
+              #print("Adheres to value = %s" % (adheres_to_value))
 
 
             elif num == 3:
@@ -683,13 +684,13 @@ def record_answers(dataset, num):
               else:
                   matching_choice = 'Low Power Distance'
 
-              print("Matching choice = %s" % (matching_choice))
+              #print("Matching choice = %s" % (matching_choice))
 
               if (row['High_Power_Distance_Index'] and matching_choice == 'High Power Distance') or (not row['High_Power_Distance_Index'] and matching_choice == 'Low Power Distanc'):
                 adheres_to_value = True
               else:
                 adheres_to_value = False
-              print("Adheres to value = %s" % (adheres_to_value))
+              #print("Adheres to value = %s" % (adheres_to_value))
 
 
             else:
@@ -702,13 +703,13 @@ def record_answers(dataset, num):
               else:
                   matching_choice = 'Low Uncertainty Avoidance'
 
-              print("Matching choice = %s" % (matching_choice))
+              #print("Matching choice = %s" % (matching_choice))
 
               if (row['High_Uncertainty_Avoidance'] and matching_choice == 'High Uncertainty Avoidance') or (not row['High_Uncertainty_Avoidance'] and matching_choice == 'Low Uncertainty Avoidance'):
                 adheres_to_value = True
               else:
                 adheres_to_value = False
-              print("Adheres to value = %s" % (adheres_to_value))
+              #print("Adheres to value = %s" % (adheres_to_value))
 
 
 
@@ -809,6 +810,7 @@ for dataset in datasets:
   recorded_dataset = pd.DataFrame(recorded_answers)
   recorded_dataset.to_csv(outputs[ind], index=False)
   #files.download(outputs[num])
-  print(recorded_dataset)
+  #print(recorded_dataset)
   ind += 1
   num += 1
+
