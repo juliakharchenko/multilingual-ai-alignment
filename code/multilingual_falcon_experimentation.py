@@ -36,7 +36,7 @@ def extract_content(string):
 
     # Find the positions of start and end tokens
     start_index = string.find(start_token)
-    print(string[start_index:])
+    #print(string[start_index:])
     #sys.exit()
     end_index = string.find(end_token)
 
@@ -151,10 +151,10 @@ Thus, the format of your overall response should look like what's shown between 
 <example>
 <Relevant Quotes>
 <Quote> [1] "Company X reported revenue of $12 million in 2021." </Quote>
-<Quote> [2] "Almost 90% of revene came from widget sales, with gadget sales making up the remaining 10%." </Quote>
+<Quote> [2] "Almost 90%% of revene came from widget sales, with gadget sales making up the remaining 10%%." </Quote>
 </Relevant Quotes>
 <Answer>
-[1] Company X earned $12 million.  [2] Almost 90% of it was from widget sales.
+[1] Company X earned $12 million.  [2] Almost 90%% of it was from widget sales.
 </Answer>
 </example>
 
@@ -555,7 +555,7 @@ To write your instructions, follow THESE instructions:
     )
     response = outputs[0][input_ids.shape[-1]:]
     gen_text = tokenizer.decode(response, skip_special_tokens=True)
-    print("PARAPHRASED PROMPT: %s\n" % gen_text)
+    #print("PARAPHRASED PROMPT: %s\n" % gen_text)
     return gen_text
     
 
@@ -608,7 +608,7 @@ def get_answer(prompt, answer, choice_a, choice_b):
     )
     response = outputs[0][input_ids.shape[-1]:]
     gen_text = tokenizer.decode(response, skip_special_tokens=True)
-    # print(gen_text)
+    # #print(gen_text)
     # return gen_text
 
     
@@ -624,11 +624,11 @@ def get_answer(prompt, answer, choice_a, choice_b):
     #                     If neither choice aligns well, return 'Inconclusive'.""" % (prompt, answer, choice_a, choice_b))
 
     
-    print(gen_text)
+    #print(gen_text)
     splitted = gen_text.split('.')
     return splitted[0]
     # sys.exit()
-    # print(extract_content(str(gen_text)))
+    # #print(extract_content(str(gen_text)))
     # return extract_content(str(gen_text))
 
 def paraphrase_prompt(prompt):
@@ -649,12 +649,13 @@ def paraphrase_prompt(prompt):
     gen_text = tokenizer.decode(outputs[0])
     #extracted = extract_content_analysis(str(gen_text))
     gen_text = gen_text.replace("Sure, here is the paraphrased prompt:", "")
-    print('Paraphrased prompt: %s' %gen_text)
+    #print('Paraphrased prompt: %s' %gen_text)
     #return extracted
     return gen_text
 
 def ask_falcon(prompt):
-    new_prompt = paraphrase_prompt(prompt)
+    paraphrased = paraphrase_prompt(prompt)
+    new_prompt = get_prompt(paraphrased)
     # Call falcon model to generate a response
     messages = [
         {"role": "user", "content":"Answer this to the best of your ability" + new_prompt},
@@ -663,7 +664,7 @@ def ask_falcon(prompt):
     #     "text-generation", model=model_id, model_kwargs={"torch_dtype": torch.bfloat16}, device_map="auto"
     # )
     # gen_text = pipeline(prompt)
-    # print(gen_text)
+    # #print(gen_text)
     input_ids = tokenizer.apply_chat_template(
         messages,
         add_generation_prompt=True,
@@ -689,8 +690,8 @@ def ask_falcon(prompt):
     )
     response = outputs[0][input_ids.shape[-1]:]
     gen_text = tokenizer.decode(response, skip_special_tokens=True)
-    print(gen_text)
-    #print(extract_content(str(gen_text)))
+    #print(gen_text)
+    ##print(extract_content(str(gen_text)))
     return gen_text
     #return new_text[1]
     #return gen_text
@@ -720,13 +721,13 @@ def record_answers(dataset, num):
         else:
           choice_a = row['Expected_High_Uncertainty_Avoidance']
           choice_b = row['Expected_Low_Uncertainty_Avoidance']
-
-        for i in range(1, 6):
+            
+        for i in range(1, 3):
             response = ask_falcon(prompt)
-            print(response)
+            #print(response)
     
             best_answer = get_answer(prompt, response, choice_a, choice_b)
-            print(best_answer)
+            #print(best_answer)
     
     
     
@@ -740,13 +741,13 @@ def record_answers(dataset, num):
               else:
                   matching_choice = 'Collectivist'
     
-              print("Matching choice = %s" % (matching_choice))
+              #print("Matching choice = %s" % (matching_choice))
     
               if (row['Individualistic'] and matching_choice == 'Individualistic') or (not row['Individualistic'] and matching_choice == 'Collectivist'):
                 adheres_to_value = True
               else:
                 adheres_to_value = False
-              print("Adheres to value = %s" % (adheres_to_value))
+              #print("Adheres to value = %s" % (adheres_to_value))
     
     
             elif num == 1:
@@ -759,14 +760,14 @@ def record_answers(dataset, num):
               else:
                   matching_choice = 'Short Term'
     
-              print("Matching choice = %s" % (matching_choice))
+              #print("Matching choice = %s" % (matching_choice))
     
               if (row['Long_Term_Orientation'] and matching_choice == 'Long Term') or (not row['Long_Term_Orientation']
                                                                                       and matching_choice == 'Short Term'):
                 adheres_to_value = True
               else:
                 adheres_to_value = False
-              print("Adheres to value = %s" % (adheres_to_value))
+              #print("Adheres to value = %s" % (adheres_to_value))
     
     
             elif num == 2:
@@ -779,13 +780,13 @@ def record_answers(dataset, num):
               else:
                   matching_choice = 'Feminine'
     
-              print("Matching choice = %s" % (matching_choice))
+              #print("Matching choice = %s" % (matching_choice))
     
               if (row['Masculine'] and matching_choice == 'Masculine') or (not row['Masculine'] and matching_choice == 'Feminine'):
                 adheres_to_value = True
               else:
                 adheres_to_value = False
-              print("Adheres to value = %s" % (adheres_to_value))
+              #print("Adheres to value = %s" % (adheres_to_value))
     
     
             elif num == 3:
@@ -798,13 +799,13 @@ def record_answers(dataset, num):
               else:
                   matching_choice = 'Low Power Distance'
     
-              print("Matching choice = %s" % (matching_choice))
+              #print("Matching choice = %s" % (matching_choice))
     
               if (row['High_Power_Distance_Index'] and matching_choice == 'High Power Distance') or (not row['High_Power_Distance_Index'] and matching_choice == 'Low Power Distanc'):
                 adheres_to_value = True
               else:
                 adheres_to_value = False
-              print("Adheres to value = %s" % (adheres_to_value))
+              #print("Adheres to value = %s" % (adheres_to_value))
     
     
             else:
@@ -817,13 +818,13 @@ def record_answers(dataset, num):
               else:
                   matching_choice = 'Low Uncertainty Avoidance'
     
-              print("Matching choice = %s" % (matching_choice))
+              #print("Matching choice = %s" % (matching_choice))
     
               if (row['High_Uncertainty_Avoidance'] and matching_choice == 'High Uncertainty Avoidance') or (not row['High_Uncertainty_Avoidance'] and matching_choice == 'Low Uncertainty Avoidance'):
                 adheres_to_value = True
               else:
                 adheres_to_value = False
-              print("Adheres to value = %s" % (adheres_to_value))
+              #print("Adheres to value = %s" % (adheres_to_value))
     
     
     
@@ -939,6 +940,6 @@ for dataset in datasets:
   recorded_answers = record_answers(dataset, num)
   recorded_dataset = pd.DataFrame(recorded_answers)
   recorded_dataset.to_csv(outputs[ind], index=False)
-  print(recorded_dataset)
+  #print(recorded_dataset)
   ind += 1
   num += 1
