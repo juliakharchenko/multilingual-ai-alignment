@@ -183,10 +183,10 @@ def get_prompt(prompt):
     <example>
     <Relevant Quotes>
     <Quote> [1] "Company X reported revenue of $12 million in 2021." </Quote>
-    <Quote> [2] "Almost 90% of revene came from widget sales, with gadget sales making up the remaining 10%." </Quote>
+    <Quote> [2] "Almost 90%% of revene came from widget sales, with gadget sales making up the remaining 10%%." </Quote>
     </Relevant Quotes>
     <Answer>
-    [1] Company X earned $12 million.  [2] Almost 90% of it was from widget sales.
+    [1] Company X earned $12 million.  [2] Almost 90%% of it was from widget sales.
     </Answer>
     </example>
     
@@ -569,7 +569,8 @@ def get_prompt(prompt):
 def ask_chat_gpt(prompt):
     # Call OpenAI's GPT-4 model to generate a response
     client = OpenAI(api_key='')
-    new_prompt = paraphrase_prompt(prompt)
+    paraphrased = paraphrase_prompt(prompt)
+    new_prompt = get_prompt(paraphrased)
     chat_completion = client.chat.completions.create(
         messages=[
             {
@@ -606,7 +607,7 @@ def record_answers(dataset, num):
           choice_a = row['Expected_High_Uncertainty_Avoidance']
           choice_b = row['Expected_Low_Uncertainty_Avoidance']
 
-        for i in range(1, 6):
+        for i in range(1, 3):
             response = ask_chat_gpt(prompt)
             print(response)
 
@@ -811,3 +812,4 @@ for dataset in datasets:
   print(recorded_dataset)
   ind += 1
   num += 1
+
