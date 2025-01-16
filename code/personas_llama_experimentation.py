@@ -166,10 +166,10 @@ Thus, the format of your overall response should look like what's shown between 
 <example>
 <Relevant Quotes>
 <Quote> [1] "Company X reported revenue of $12 million in 2021." </Quote>
-<Quote> [2] "Almost 90% of revene came from widget sales, with gadget sales making up the remaining 10%." </Quote>
+<Quote> [2] "Almost 90%% of revene came from widget sales, with gadget sales making up the remaining 10%%." </Quote>
 </Relevant Quotes>
 <Answer>
-[1] Company X earned $12 million.  [2] Almost 90% of it was from widget sales.
+[1] Company X earned $12 million.  [2] Almost 90%% of it was from widget sales.
 </Answer>
 </example>
 
@@ -679,7 +679,8 @@ def paraphrase_prompt(prompt):
     return gen_text
 
 def ask_llama(prompt):
-    new_prompt = paraphrase_prompt(prompt)
+    paraphrased = paraphrase_prompt(prompt)
+    new_prompt = get_prompt(paraphrased)
     # Call LLaMA model to generate a response
     messages = [
         {"role": "system", "content": "Answer this to the best of your ability"},
@@ -746,7 +747,7 @@ def record_answers(dataset, num):
           choice_a = row['Expected_High_Uncertainty_Avoidance']
           choice_b = row['Expected_Low_Uncertainty_Avoidance']
 
-        for i in range(1, 6):
+        for i in range(1, 3):
             response = ask_llama(prompt)
             print(response)
     
@@ -906,23 +907,23 @@ def record_answers(dataset, num):
 
 # Individualistic vs Collectivist
 personas_individualistic_vs_collectivist_df = pd.read_csv("../data/output_personas_individualistic_vs_collectivist.csv")
-output_personas_individualistic_vs_collectivist_csv = "output_llama_anthropic_prompt_personas_individualistic_collectivist_paraphrased.csv"
+output_personas_individualistic_vs_collectivist_csv = "output_llama_refined_prompt_personas_individualistic_collectivist_paraphrased.csv"
 
 # Long term vs short term orientation
 personas_orientation_df = pd.read_csv("../data/output_personas_long_term_orientation.csv")
-output_personas_orientation_csv = "output_llama_anthropic_prompt_personas_orientation_paraphrased.csv"
+output_personas_orientation_csv = "output_llama__refined_prompt_personas_orientation_paraphrased.csv"
 
 # Masculinity vs femininity
 personas_mas_df = pd.read_csv("../data/output_personas_masculinity_femininity.csv")
-output_personas_mas_csv = "output_llama_anthropic_prompt_personas_mas_new_paraphrased.csv"
+output_personas_mas_csv = "output_llama__refined_prompt_personas_mas_new_paraphrased.csv"
 
 # Power distance index
 personas_power_distance_df = pd.read_csv("../data/output_personas_power_distance_index.csv")
-output_personas_power_distance_csv = "output_llama_anthropic_prompt_personas_power_distance_paraphrased.csv"
+output_personas_power_distance_csv = "output_llama__refined_prompt_personas_power_distance_paraphrased.csv"
 
 # Uncertainty avoidance
 personas_uncertainty_avoidance_df = pd.read_csv("../data/output_personas_uncertainty.csv")
-output_personas_uncertainity_avoidance_csv = "output_llama_anthropic_prompt_personas_uncertainty_paraphrased.csv"
+output_personas_uncertainity_avoidance_csv = "output_llama__refined_prompt_personas_uncertainty_paraphrased.csv"
 
 datasets = [
   personas_individualistic_vs_collectivist_df,
@@ -950,3 +951,4 @@ for dataset in datasets:
   print(recorded_dataset)
   ind += 1
   num += 1
+
